@@ -35,11 +35,21 @@ resource "github_branch_protection" "vmdeploytools_main" {
 # Repo is private; upgrade account or make public to enable protection.
 
 # ---------------------------------------------------------------------------
-# pihole-flask-api  (no CI yet — basic protection)
+# pihole-flask-api
 # ---------------------------------------------------------------------------
 resource "github_branch_protection" "pihole_flask_api_main" {
   repository_id = "pihole-flask-api"
   pattern       = "main"
 
-  enforce_admins = false
+  required_status_checks {
+    strict   = true
+    contexts = ["test (3.11)", "test (3.12)"]
+  }
+
+  required_pull_request_reviews {
+    dismiss_stale_reviews           = true
+    required_approving_review_count = 0
+  }
+
+  enforce_admins = true
 }
