@@ -29,10 +29,30 @@ resource "github_branch_protection" "vmdeploytools_main" {
 }
 
 # ---------------------------------------------------------------------------
+# github-admin
+# ---------------------------------------------------------------------------
+resource "github_branch_protection" "github_admin_main" {
+  repository_id = "github-admin"
+  pattern       = "main"
+
+  required_status_checks {
+    strict   = true
+    contexts = ["Terraform Plan"]
+  }
+
+  required_pull_request_reviews {
+    dismiss_stale_reviews           = true
+    required_approving_review_count = 0
+  }
+
+  enforce_admins = true
+}
+
+# ---------------------------------------------------------------------------
 # homelab-infrastructure
 # ---------------------------------------------------------------------------
-# Branch protection requires GitHub Pro for private repos — skipping.
-# Repo is private; upgrade account or make public to enable protection.
+# Branch protection requires GitHub Pro for private repos — now eligible.
+# TODO: add branch protection resource once workflows are in place.
 
 # ---------------------------------------------------------------------------
 # pihole-flask-api
