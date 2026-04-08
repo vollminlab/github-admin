@@ -1,12 +1,23 @@
 # ---------------------------------------------------------------------------
 # k8s-vollminlab-cluster
 # ---------------------------------------------------------------------------
-# TODO: migrate from k8s-vollminlab-cluster/terraform/github-branch-protection/
-# Current protection (managed there): strict=true, enforce_admins=true,
-# require_conversation_resolution=true, checks: Security Scan, Validate
-# Kubernetes Manifests, Kyverno Policy Validation, Integration Test.
-# Import with: terraform import github_branch_protection.k8s_main R_kgDON3iTuQ:main
-# Then remove the local Terraform in that repo.
+resource "github_branch_protection" "k8s_main" {
+  repository_id = "R_kgDON3iTuQ"
+  pattern       = "main"
+
+  required_status_checks {
+    strict   = true
+    contexts = [
+      "Security Scan",
+      "Validate Kubernetes Manifests",
+      "Kyverno Policy Validation",
+      "Integration Test",
+    ]
+  }
+
+  enforce_admins                  = true
+  require_conversation_resolution = true
+}
 
 # ---------------------------------------------------------------------------
 # VMDeployTools
@@ -51,8 +62,17 @@ resource "github_branch_protection" "github_admin_main" {
 # ---------------------------------------------------------------------------
 # homelab-infrastructure
 # ---------------------------------------------------------------------------
-# Branch protection requires GitHub Pro for private repos — now eligible.
-# TODO: add branch protection resource once workflows are in place.
+resource "github_branch_protection" "homelab_infrastructure_main" {
+  repository_id = "homelab-infrastructure"
+  pattern       = "main"
+
+  required_pull_request_reviews {
+    dismiss_stale_reviews           = true
+    required_approving_review_count = 0
+  }
+
+  enforce_admins = true
+}
 
 # ---------------------------------------------------------------------------
 # pihole-flask-api
