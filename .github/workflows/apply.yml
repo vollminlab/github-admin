@@ -18,12 +18,14 @@ jobs:
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
           GITHUB_TOKEN: op://Homelab/Github-Multipurpose-PAT/password
+          MINIO_ACCESS_KEY: op://Homelab/Minio-Terraform-Github-Admin/username
+          MINIO_SECRET_KEY: op://Homelab/Minio-Terraform-Github-Admin/credential
 
       - uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
         working-directory: terraform
-        run: terraform init
+        run: terraform init -backend-config="access_key=$MINIO_ACCESS_KEY" -backend-config="secret_key=$MINIO_SECRET_KEY"
 
       - name: Terraform Apply
         working-directory: terraform
