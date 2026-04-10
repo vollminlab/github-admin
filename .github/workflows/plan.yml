@@ -7,7 +7,7 @@ on:
 jobs:
   plan:
     name: Terraform Plan
-    runs-on: ubuntu-latest
+    runs-on: vollminlab
 
     steps:
       - uses: actions/checkout@v4
@@ -17,15 +17,14 @@ jobs:
           export-env: true
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-          GITHUB_TOKEN: op://Homelab/Github-Multipurpose-PAT/password
-          MINIO_ACCESS_KEY: op://Homelab/Minio-Terraform-Github-Admin/username
-          MINIO_SECRET_KEY: op://Homelab/Minio-Terraform-Github-Admin/credential
+          GITHUB_TOKEN: op://Homelab/Github-Org-PAT/password
+          TF_TOKEN_app_terraform_io: op://Homelab/github-admin CI/credential
 
       - uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
         working-directory: terraform
-        run: terraform init -backend-config="access_key=$MINIO_ACCESS_KEY" -backend-config="secret_key=$MINIO_SECRET_KEY"
+        run: terraform init
 
       - name: Terraform Plan
         working-directory: terraform
