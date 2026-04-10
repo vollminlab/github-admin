@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: 1password/load-secrets-action@v2
+      - uses: 1password/load-secrets-action@v4
         with:
           export-env: true
         env:
@@ -22,7 +22,7 @@ jobs:
 
       - name: Install Node.js
         run: |
-          curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+          curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash -
           sudo apt-get install -y nodejs
 
       - uses: hashicorp/setup-terraform@v3
