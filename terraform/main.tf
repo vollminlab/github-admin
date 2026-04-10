@@ -102,6 +102,19 @@ resource "github_repository" "homelab_infrastructure" {
   has_projects           = true
 }
 
+resource "github_branch_protection" "homelab_infrastructure_main" {
+  repository_id = github_repository.homelab_infrastructure.node_id
+  pattern       = "main"
+
+  required_pull_request_reviews {
+    dismiss_stale_reviews           = true
+    required_approving_review_count = 0
+  }
+
+  enforce_admins                  = true
+  require_conversation_resolution = true
+}
+
 
 # ---------------------------------------------------------------------------
 # pihole-flask-api
