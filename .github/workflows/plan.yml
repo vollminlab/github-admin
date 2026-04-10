@@ -18,7 +18,7 @@ jobs:
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
           GITHUB_TOKEN: op://Homelab/Github-Org-PAT/password
-          TF_TOKEN_app_terraform_io: op://Homelab/github-admin CI/credential
+          TF_TOKEN_app_terraform_io: op://Homelab/Terraform-Cloud-Token/credential
 
       - uses: hashicorp/setup-terraform@v3
 
