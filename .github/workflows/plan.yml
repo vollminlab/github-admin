@@ -20,6 +20,11 @@ jobs:
           GITHUB_TOKEN: op://Homelab/Github-Org-PAT/password
           TF_TOKEN_app_terraform_io: op://Homelab/Terraform-Cloud-Token/credential
 
+      - name: Install Node.js
+        run: |
+          curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+          sudo apt-get install -y nodejs
+
       - uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
