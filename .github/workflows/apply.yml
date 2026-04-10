@@ -7,7 +7,7 @@ on:
 jobs:
   apply:
     name: Terraform Apply
-    runs-on: ubuntu-latest
+    runs-on: vollminlab
 
     steps:
       - uses: actions/checkout@v4
@@ -17,7 +17,13 @@ jobs:
           export-env: true
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-          GITHUB_TOKEN: op://Homelab/Github-Multipurpose-PAT/password
+          GITHUB_TOKEN: op://Homelab/Github-Org-PAT/password
+          TF_TOKEN_app_terraform_io: op://Homelab/Terraform-Cloud-Token/credential
+
+      - name: Install Node.js
+        run: |
+          curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+          sudo apt-get install -y nodejs
 
       - uses: hashicorp/setup-terraform@v3
 

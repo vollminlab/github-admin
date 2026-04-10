@@ -7,9 +7,16 @@ terraform {
       version = "~> 6.0"
     }
   }
+
+  cloud {
+    organization = "vollminlab"
+    workspaces {
+      name = "github-admin"
+    }
+  }
 }
 
 provider "github" {
-  owner = "svollmi1"
+  owner = "vollminlab"
   token = var.github_token
 }
