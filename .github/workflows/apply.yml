@@ -9,6 +9,9 @@ jobs:
     name: Terraform Apply
     runs-on: vollminlab
 
+    env:
+      TF_PLUGIN_CACHE_DIR: ~/.terraform.d/plugin-cache
+
     steps:
       - uses: actions/checkout@v4
 
@@ -26,6 +29,17 @@ jobs:
           sudo apt-get install -y nodejs
 
       - uses: hashicorp/setup-terraform@v3
+
+      - name: Cache Terraform plugins
+        uses: actions/cache@v4
+        with:
+          path: ~/.terraform.d/plugin-cache
+          key: ${{ runner.os }}-terraform-${{ hashFiles('terraform/versions.tf') }}
+          restore-keys: |
+            ${{ runner.os }}-terraform-
+
+      - name: Create Terraform plugin cache dir
+        run: mkdir -p ~/.terraform.d/plugin-cache
 
       - name: Terraform Init
         working-directory: terraform

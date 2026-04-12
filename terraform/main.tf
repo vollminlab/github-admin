@@ -144,3 +144,33 @@ resource "github_branch_protection" "pihole_flask_api_main" {
   enforce_admins                  = true
   require_conversation_resolution = true
 }
+
+# ---------------------------------------------------------------------------
+# masters-league
+# ---------------------------------------------------------------------------
+import {
+  to = github_repository.masters_league
+  id = "masters-league"
+}
+
+resource "github_repository" "masters_league" {
+  name                   = "masters-league"
+  description            = "Masters Tournament leaderboard and scorecard viewer for a fantasy golf league"
+  delete_branch_on_merge = true
+  has_issues             = true
+  has_projects           = true
+  has_wiki               = false
+}
+
+resource "github_branch_protection" "masters_league_main" {
+  repository_id = github_repository.masters_league.node_id
+  pattern       = "main"
+
+  required_pull_request_reviews {
+    dismiss_stale_reviews           = true
+    required_approving_review_count = 0
+  }
+
+  enforce_admins                  = true
+  require_conversation_resolution = true
+}
