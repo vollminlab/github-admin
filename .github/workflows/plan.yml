@@ -13,7 +13,7 @@ jobs:
       TF_PLUGIN_CACHE_DIR: ~/.terraform.d/plugin-cache
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: 1password/load-secrets-action@v4
         with:
@@ -28,18 +28,35 @@ jobs:
           curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash -
           sudo apt-get install -y nodejs
 
-      - uses: hashicorp/setup-terraform@v3
-
-      - name: Cache Terraform plugins
-        uses: actions/cache@v4
-        with:
-          path: ~/.terraform.d/plugin-cache
-          key: ${{ runner.os }}-terraform-${{ hashFiles('terraform/versions.tf') }}
-          restore-keys: |
-            ${{ runner.os }}-terraform-
+      - uses: hashicorp/setup-terraform@v4
 
       - name: Create Terraform plugin cache dir
         run: mkdir -p ~/.terraform.d/plugin-cache
+
+      - name: Cache Terraform plugins
+        uses: actions/cache@v5
+        with:
+          path: ~/.terraform.d/plugin-cache
+          key: ${{ runner.os }}-terraform-${{ hashFiles('terraform/.terraform.lock.hcl') }}
+          restore-keys: |
+            ${{ runner.os }}-terraform-
+
+      - name: Pre-populate Terraform plugin cache
+        run: |
+          VERSION=$(grep -A2 'provider "registry.terraform.io/integrations/github"' terraform/.terraform.lock.hcl | grep 'version' | grep -oP '"\K[0-9]+\.[0-9]+\.[0-9]+')
+          CACHE_PATH="$HOME/.terraform.d/plugin-cache/registry.terraform.io/integrations/github/$VERSION/linux_amd64"
+          BINARY="$CACHE_PATH/terraform-provider-github_v$VERSION"
+          if [ ! -f "$BINARY" ]; then
+            echo "Provider not in cache, downloading v$VERSION via curl..."
+            mkdir -p "$CACHE_PATH"
+            curl -fsSL "https://github.com/integrations/terraform-provider-github/releases/download/v${VERSION}/terraform-provider-github_${VERSION}_linux_amd64.zip" \
+              -o /tmp/github-provider.zip
+            unzip -o /tmp/github-provider.zip -d "$CACHE_PATH/"
+            chmod +x "$CACHE_PATH/"*
+            echo "Done."
+          else
+            echo "Provider v$VERSION already in cache."
+          fi
 
       - name: Terraform Init
         working-directory: terraform
