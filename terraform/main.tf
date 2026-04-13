@@ -176,6 +176,36 @@ resource "github_branch_protection" "homelab_obsidian_vault_main" {
 }
 
 # ---------------------------------------------------------------------------
+# shlink-ingress-controller
+# ---------------------------------------------------------------------------
+import {
+  to = github_repository.shlink_ingress_controller
+  id = "shlink-ingress-controller"
+}
+
+resource "github_repository" "shlink_ingress_controller" {
+  name                   = "shlink-ingress-controller"
+  description            = "Kubernetes controller that auto-creates Shlink short links from Ingress annotations"
+  delete_branch_on_merge = true
+  has_issues             = true
+  has_projects           = true
+  has_wiki               = false
+}
+
+resource "github_branch_protection" "shlink_ingress_controller_main" {
+  repository_id = github_repository.shlink_ingress_controller.node_id
+  pattern       = "main"
+
+  required_pull_request_reviews {
+    dismiss_stale_reviews           = true
+    required_approving_review_count = 0
+  }
+
+  enforce_admins                  = true
+  require_conversation_resolution = true
+}
+
+# ---------------------------------------------------------------------------
 # masters-league
 # ---------------------------------------------------------------------------
 import {
