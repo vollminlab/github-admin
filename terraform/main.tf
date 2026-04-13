@@ -234,3 +234,33 @@ resource "github_branch_protection" "masters_league_main" {
   enforce_admins                  = true
   require_conversation_resolution = true
 }
+
+# ---------------------------------------------------------------------------
+# groupme_exporter
+# ---------------------------------------------------------------------------
+import {
+  to = github_repository.groupme_exporter
+  id = "groupme_exporter"
+}
+
+resource "github_repository" "groupme_exporter" {
+  name                   = "groupme_exporter"
+  description            = "Pulls all messages from a groupme chat into a sqlite database as a daemon service"
+  delete_branch_on_merge = true
+  has_issues             = true
+  has_projects           = true
+  has_wiki               = false
+}
+
+resource "github_branch_protection" "groupme_exporter_main" {
+  repository_id = github_repository.groupme_exporter.node_id
+  pattern       = "main"
+
+  required_pull_request_reviews {
+    dismiss_stale_reviews           = true
+    required_approving_review_count = 0
+  }
+
+  enforce_admins                  = true
+  require_conversation_resolution = true
+}
