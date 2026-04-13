@@ -156,6 +156,7 @@ import {
 resource "github_repository" "homelab_obsidian_vault" {
   name                   = "homelab-obsidian-vault"
   description            = "Obsidian vault for vollminlab homelab documentation"
+  visibility             = "public"
   delete_branch_on_merge = true
   has_issues             = true
   has_projects           = false
@@ -186,6 +187,7 @@ import {
 resource "github_repository" "shlink_ingress_controller" {
   name                   = "shlink-ingress-controller"
   description            = "Kubernetes controller that auto-creates Shlink short links from Ingress annotations"
+  visibility             = "public"
   delete_branch_on_merge = true
   has_issues             = true
   has_projects           = true
