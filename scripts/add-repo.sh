@@ -43,7 +43,7 @@ fi
 
 echo "Fetching repo metadata from GitHub..."
 REPO_JSON=$(gh repo view "${ORG}/${REPO_NAME}" \
-  --json name,description,hasIssuesEnabled,hasProjectsEnabled,hasWikiEnabled 2>/dev/null) || {
+  --json name,description,hasIssuesEnabled,hasProjectsEnabled,hasWikiEnabled,isPrivate 2>/dev/null) || {
   echo "Error: repo ${ORG}/${REPO_NAME} not found on GitHub. Create it first." >&2
   exit 1
 }
@@ -52,6 +52,12 @@ DESCRIPTION=$(echo "$REPO_JSON" | jq -r '.description // ""')
 HAS_ISSUES=$(echo "$REPO_JSON"  | jq -r 'if .hasIssuesEnabled  then "true" else "false" end')
 HAS_PROJECTS=$(echo "$REPO_JSON" | jq -r 'if .hasProjectsEnabled then "true" else "false" end')
 HAS_WIKI=$(echo "$REPO_JSON"    | jq -r 'if .hasWikiEnabled     then "true" else "false" end')
+IS_PRIVATE=$(echo "$REPO_JSON"  | jq -r '.isPrivate')
+
+if [ "$IS_PRIVATE" = "true" ]; then
+  echo "Warning: ${ORG}/${REPO_NAME} is private. Branch protection requires a public repo on the free plan." >&2
+  echo "Make it public first, or branch protection will fail to apply." >&2
+fi
 
 # Build required_status_checks block (only if checks were provided)
 STATUS_CHECKS_BLOCK=""
