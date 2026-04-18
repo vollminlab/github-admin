@@ -11,10 +11,14 @@ This repo manages GitHub branch protection rules across all Vollminlab repos usi
 | Repo | Protection | Required checks |
 |---|---|---|
 | `k8s-vollminlab-cluster` | PR required, enforce admins, conversation resolution | Security Scan, Validate Kubernetes Manifests, Kyverno Policy Validation, Integration Test |
-| `VMDeployTools` | PR required | Pester Unit Tests |
-| `github-admin` | PR required, enforce admins | Terraform Plan |
-| `homelab-infrastructure` | PR required, enforce admins | None (no CI) |
-| `pihole-flask-api` | PR required, enforce admins | test (3.11), test (3.12) |
+| `VMDeployTools` | PR required, enforce admins, conversation resolution | Pester Unit Tests |
+| `github-admin` | PR required, enforce admins, conversation resolution | Terraform Plan |
+| `homelab-infrastructure` | PR required, enforce admins, conversation resolution | None (no CI) |
+| `pihole-flask-api` | PR required, enforce admins, conversation resolution | test (3.11), test (3.12) |
+| `homelab-obsidian-vault` | PR required, enforce admins, conversation resolution | None (no CI) |
+| `shlink-ingress-controller` | PR required, enforce admins, conversation resolution | None (no CI) |
+| `masters-league` | PR required, enforce admins, conversation resolution | None (no CI) |
+| `groupme_exporter` | PR required, enforce admins, conversation resolution | None (no CI) |
 
 ## How it works
 
