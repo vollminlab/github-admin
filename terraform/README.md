@@ -1,15 +1,18 @@
 # github-admin Terraform
 
-Manages GitHub branch protection rules for all `svollmi1` repos.
+Manages GitHub branch protection rules for all `vollminlab` repos.
 
-## Usage
+## Local development (plan only — never apply locally)
+
+All applies run through CI on merge to `main`. Local usage is for validating changes before opening a PR.
 
 ```bash
 cd terraform
-export TF_VAR_github_token=$(op read "op://Homelab/Github-Multipurpose-PAT/password")
-terraform init
-terraform plan
-terraform apply
+terraform init \
+  -backend-config="access_key=$(op read 'op://Homelab/Minio-Terraform-Github-Admin/username')" \
+  -backend-config="secret_key=$(op read 'op://Homelab/Minio-Terraform-Github-Admin/credential')"
+
+terraform plan -var="github_token=$(op read 'op://Homelab/Github-Multipurpose-PAT/password')"
 ```
 
 ## Repos managed
@@ -18,13 +21,20 @@ terraform apply
 |------|----------------|
 | `k8s-vollminlab-cluster` | Security Scan, Validate Kubernetes Manifests, Kyverno Policy Validation, Integration Test |
 | `VMDeployTools` | Pester Unit Tests |
-| `homelab-infrastructure` | *(none — push protection only)* |
-| `pihole-flask-api` | *(none — push protection only)* |
+| `github-admin` | Terraform Plan |
+| `homelab-infrastructure` | *(none)* |
+| `pihole-flask-api` | test (3.11), test (3.12) |
+| `homelab-obsidian-vault` | *(none)* |
+| `shlink-ingress-controller` | *(none)* |
+| `masters-league` | *(none)* |
+| `groupme_exporter` | *(none)* |
 
 ## Importing existing protection
 
-If protection already exists (e.g. k8s was managed by the old local Terraform), import first:
+If protection already exists outside of Terraform, import it first:
 
 ```bash
-terraform import github_branch_protection.k8s_main k8s-vollminlab-cluster:main
+terraform import \
+  -var="github_token=$(op read 'op://Homelab/Github-Multipurpose-PAT/password')" \
+  github_branch_protection.k8s_main <REPO_NODE_ID>:main
 ```
