@@ -33,7 +33,7 @@ This repo manages GitHub branch protection rules across all Vollminlab repos usi
 
 No secrets are stored in GitHub. Both workflows use the [1Password GitHub Actions integration](https://github.com/1Password/load-secrets-action) to retrieve secrets at runtime using the `Github-Admin-CI` 1Password service account:
 
-- **GitHub PAT** — `op://Homelab/Github-Multipurpose-PAT/password` — used by Terraform to manage branch protection
+- **GitHub PAT** — `op://Homelab/Github-Admin-Token/password` — used by Terraform to manage repositories and branch protection
 - **Minio access key** — `op://Homelab/Minio-Terraform-Github-Admin/username` — used to authenticate to the Terraform state backend
 - **Minio secret key** — `op://Homelab/Minio-Terraform-Github-Admin/credential` — used to authenticate to the Terraform state backend
 
@@ -70,7 +70,7 @@ If the repo already has branch protection applied outside of Terraform, import i
 
 ```bash
 terraform import \
-  -var="github_token=$(op read 'op://Homelab/Github-Multipurpose-PAT/password')" \
+  -var="github_token=$(op read 'op://Homelab/Github-Admin-Token/password')" \
   github_branch_protection.my_repo_main <REPO_NODE_ID>:main
 ```
 
@@ -86,5 +86,5 @@ terraform init \
   -backend-config="access_key=$(op read 'op://Homelab/Minio-Terraform-Github-Admin/username')" \
   -backend-config="secret_key=$(op read 'op://Homelab/Minio-Terraform-Github-Admin/credential')"
 
-terraform plan -var="github_token=$(op read 'op://Homelab/Github-Multipurpose-PAT/password')"
+terraform plan -var="github_token=$(op read 'op://Homelab/Github-Admin-Token/password')"
 ```

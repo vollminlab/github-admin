@@ -12,7 +12,7 @@ terraform init \
   -backend-config="access_key=$(op read 'op://Homelab/Minio-Terraform-Github-Admin/username')" \
   -backend-config="secret_key=$(op read 'op://Homelab/Minio-Terraform-Github-Admin/credential')"
 
-terraform plan -var="github_token=$(op read 'op://Homelab/Github-Multipurpose-PAT/password')"
+terraform plan -var="github_token=$(op read 'op://Homelab/Github-Admin-Token/password')"
 ```
 
 ## Repos managed
@@ -35,6 +35,6 @@ If protection already exists outside of Terraform, import it first:
 
 ```bash
 terraform import \
-  -var="github_token=$(op read 'op://Homelab/Github-Multipurpose-PAT/password')" \
+  -var="github_token=$(op read 'op://Homelab/Github-Admin-Token/password')" \
   github_branch_protection.k8s_main <REPO_NODE_ID>:main
 ```
