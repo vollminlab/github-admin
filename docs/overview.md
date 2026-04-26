@@ -45,7 +45,7 @@ Plan output is posted as a PR comment so reviewers can see the exact GitHub API 
 
 No secrets are stored in the repo or in GitHub secrets. All credentials are fetched at runtime from 1Password via the ARC runner:
 
-- **GitHub token**: `op://Homelab/Github-Org-PAT/password`
+- **GitHub token**: `op://Homelab/Github-Admin-Token/password`
 - **Terraform Cloud token**: `op://Homelab/Terraform-Cloud-Token/credential`
 
 State is stored remotely in HCP Terraform Cloud (vollminlab org, github-admin workspace).

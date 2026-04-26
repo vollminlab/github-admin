@@ -25,7 +25,7 @@ Branch protection and repository settings for 5 repos via the `integrations/gith
 
 ## Secrets (all via 1Password, fetched by ARC runner)
 
-- `op://Homelab/Github-Org-PAT/password` — GitHub token (needs `repo`, `admin:org` scopes)
+- `op://Homelab/Github-Admin-Token/password` — GitHub fine-grained PAT (repository `Administration: read/write`, `Metadata: read`)
 - `op://Homelab/Terraform-Cloud-Token/credential` — HCP Terraform API token
 
 ## Adding a repo
