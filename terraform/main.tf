@@ -19,6 +19,7 @@ resource "github_branch_protection" "k8s_main" {
     contexts = [
       "Security Scan",
       "Validate Kubernetes Manifests",
+      "Validate Terraform Modules",
       "Kyverno Policy Validation",
       "Integration Test",
     ]
