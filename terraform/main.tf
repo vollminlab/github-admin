@@ -239,6 +239,36 @@ resource "github_branch_protection" "masters_league_main" {
 }
 
 # ---------------------------------------------------------------------------
+# ansible-playbooks
+# ---------------------------------------------------------------------------
+import {
+  to = github_repository.ansible_playbooks
+  id = "ansible-playbooks"
+}
+
+resource "github_repository" "ansible_playbooks" {
+  name                   = "ansible-playbooks"
+  description            = "Ansible playbooks for Vollminlab infrastructure automation"
+  delete_branch_on_merge = true
+  has_issues             = true
+  has_projects           = true
+  has_wiki               = false
+}
+
+resource "github_branch_protection" "ansible_playbooks_main" {
+  repository_id = github_repository.ansible_playbooks.node_id
+  pattern       = "main"
+
+  required_pull_request_reviews {
+    dismiss_stale_reviews           = true
+    required_approving_review_count = 0
+  }
+
+  enforce_admins                  = true
+  require_conversation_resolution = true
+}
+
+# ---------------------------------------------------------------------------
 # groupme_exporter
 # ---------------------------------------------------------------------------
 import {
