@@ -297,3 +297,34 @@ resource "github_branch_protection" "groupme_exporter_main" {
   enforce_admins                  = true
   require_conversation_resolution = true
 }
+
+# ---------------------------------------------------------------------------
+# longhorn-rebalancing-controller
+# ---------------------------------------------------------------------------
+import {
+  to = github_repository.longhorn_rebalancing_controller
+  id = "longhorn-rebalancing-controller"
+}
+
+resource "github_repository" "longhorn_rebalancing_controller" {
+  name                   = "longhorn-rebalancing-controller"
+  description            = "A custom Go controller to better balance longhorn volume allocation across kubernetes worker nodes"
+  visibility             = "public"
+  delete_branch_on_merge = true
+  has_issues             = true
+  has_projects           = true
+  has_wiki               = false
+}
+
+resource "github_branch_protection" "longhorn_rebalancing_controller_main" {
+  repository_id = github_repository.longhorn_rebalancing_controller.node_id
+  pattern       = "main"
+
+  required_pull_request_reviews {
+    dismiss_stale_reviews           = true
+    required_approving_review_count = 0
+  }
+
+  enforce_admins                  = true
+  require_conversation_resolution = true
+}
