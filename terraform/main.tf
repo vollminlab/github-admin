@@ -340,13 +340,22 @@ import {
 resource "github_repository" "vollmint" {
   name                   = "vollmint"
   description            = "Household budget tracker (SimpleFIN + Venmo CSV ingestion)"
-  visibility             = "private"
+  visibility             = "public"
   delete_branch_on_merge = true
   has_issues             = true
   has_projects           = true
   has_wiki               = false
 }
 
-# No github_branch_protection resource: vollmint is private and branch
-# protection requires a public repo on the GitHub free plan (apply would 403).
-# Add the standard block if the repo is ever made public.
+resource "github_branch_protection" "vollmint_main" {
+  repository_id = github_repository.vollmint.node_id
+  pattern       = "main"
+
+  required_pull_request_reviews {
+    dismiss_stale_reviews           = true
+    required_approving_review_count = 0
+  }
+
+  enforce_admins                  = true
+  require_conversation_resolution = true
+}
