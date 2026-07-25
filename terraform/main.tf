@@ -328,3 +328,25 @@ resource "github_branch_protection" "longhorn_rebalancing_controller_main" {
   enforce_admins                  = true
   require_conversation_resolution = true
 }
+
+# ---------------------------------------------------------------------------
+# vollmint
+# ---------------------------------------------------------------------------
+import {
+  to = github_repository.vollmint
+  id = "vollmint"
+}
+
+resource "github_repository" "vollmint" {
+  name                   = "vollmint"
+  description            = "Household budget tracker (SimpleFIN + Venmo CSV ingestion)"
+  visibility             = "private"
+  delete_branch_on_merge = true
+  has_issues             = true
+  has_projects           = true
+  has_wiki               = false
+}
+
+# No github_branch_protection resource: vollmint is private and branch
+# protection requires a public repo on the GitHub free plan (apply would 403).
+# Add the standard block if the repo is ever made public.
