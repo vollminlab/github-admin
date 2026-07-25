@@ -328,3 +328,34 @@ resource "github_branch_protection" "longhorn_rebalancing_controller_main" {
   enforce_admins                  = true
   require_conversation_resolution = true
 }
+
+# ---------------------------------------------------------------------------
+# vollmint
+# ---------------------------------------------------------------------------
+import {
+  to = github_repository.vollmint
+  id = "vollmint"
+}
+
+resource "github_repository" "vollmint" {
+  name                   = "vollmint"
+  description            = "Household budget tracker (SimpleFIN + Venmo CSV ingestion)"
+  visibility             = "public"
+  delete_branch_on_merge = true
+  has_issues             = true
+  has_projects           = true
+  has_wiki               = false
+}
+
+resource "github_branch_protection" "vollmint_main" {
+  repository_id = github_repository.vollmint.node_id
+  pattern       = "main"
+
+  required_pull_request_reviews {
+    dismiss_stale_reviews           = true
+    required_approving_review_count = 0
+  }
+
+  enforce_admins                  = true
+  require_conversation_resolution = true
+}
