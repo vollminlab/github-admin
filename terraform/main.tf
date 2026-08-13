@@ -15,13 +15,18 @@ resource "github_branch_protection" "k8s_main" {
   pattern       = "main"
 
   required_status_checks {
-    strict   = true
+    strict = true
     contexts = [
       "Security Scan",
       "Validate Kubernetes Manifests",
       "Validate Terraform Modules",
       "Kyverno Policy Validation",
       "Integration Test",
+      # gitleaks. Was never in this list, so a PR with a failing secret scan has
+      # always been mergeable — observed on k8s PR #1065. Runs on
+      # ${{ vars.CI_RUNNER || 'vollminlab' }}, so it shares the existing ARC
+      # escape hatch and adds no new way to deadlock merges.
+      "Secret Scanning",
     ]
   }
 
