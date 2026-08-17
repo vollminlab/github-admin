@@ -173,6 +173,11 @@ resource "github_branch_protection" "homelab_obsidian_vault_main" {
   repository_id = github_repository.homelab_obsidian_vault.node_id
   pattern       = "main"
 
+  required_status_checks {
+    strict   = true
+    contexts = ["Secret Scanning"]
+  }
+
   required_pull_request_reviews {
     dismiss_stale_reviews           = true
     required_approving_review_count = 0
@@ -204,6 +209,11 @@ resource "github_branch_protection" "shlink_ingress_controller_main" {
   repository_id = github_repository.shlink_ingress_controller.node_id
   pattern       = "main"
 
+  required_status_checks {
+    strict   = true
+    contexts = ["Test"]
+  }
+
   required_pull_request_reviews {
     dismiss_stale_reviews           = true
     required_approving_review_count = 0
@@ -230,6 +240,10 @@ resource "github_repository" "masters_league" {
   has_wiki               = false
 }
 
+# No required_status_checks: the only workflow here (build.yml) triggers on
+# `v*` tags, not pull_request, so there is no check that could ever report on a
+# PR. Requiring one would block every merge permanently. Give this repo a
+# PR-triggered CI workflow first, then add its context here.
 resource "github_branch_protection" "masters_league_main" {
   repository_id = github_repository.masters_league.node_id
   pattern       = "main"
@@ -325,6 +339,11 @@ resource "github_branch_protection" "longhorn_rebalancing_controller_main" {
   repository_id = github_repository.longhorn_rebalancing_controller.node_id
   pattern       = "main"
 
+  required_status_checks {
+    strict   = true
+    contexts = ["Test"]
+  }
+
   required_pull_request_reviews {
     dismiss_stale_reviews           = true
     required_approving_review_count = 0
@@ -355,6 +374,11 @@ resource "github_repository" "vollmint" {
 resource "github_branch_protection" "vollmint_main" {
   repository_id = github_repository.vollmint.node_id
   pattern       = "main"
+
+  required_status_checks {
+    strict   = true
+    contexts = ["Go Tests", "Web Tests"]
+  }
 
   required_pull_request_reviews {
     dismiss_stale_reviews           = true
