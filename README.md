@@ -69,24 +69,27 @@ conversation resolution enforced. They differ only in which status checks must p
 | `pihole-flask-api` | test (3.11) · test (3.12) |
 | `VMDeployTools` | Pester Unit Tests |
 | `github-admin` | Terraform Plan |
+| `vollmint` | Go Tests · Web Tests |
+| `longhorn-rebalancing-controller` | Test |
+| `shlink-ingress-controller` | Test |
+| `homelab-obsidian-vault` | Secret Scanning |
 | `ansible-playbooks` | — |
 | `groupme_exporter` | — |
 | `homelab-infrastructure` | — |
-| `homelab-obsidian-vault` | — |
-| `longhorn-rebalancing-controller` | — |
 | `masters-league` | — |
-| `shlink-ingress-controller` | — |
-| `vollmint` | — |
 
 Common settings across all repos: `delete_branch_on_merge`, issues enabled, and zero required
 approving reviews — this is a single-maintainer org, so the gate is CI, not a second pair of eyes.
 
 > **A blank cell means no check is *required*, not that no CI exists.**
-> `longhorn-rebalancing-controller`, `shlink-ingress-controller`, `vollmint`, `masters-league`, and
-> `homelab-obsidian-vault` all run workflows that are not wired into `required_status_checks`, so a
-> red build does not block a merge there. This is exactly the gap that let a failing secret scan
-> merge on `k8s-vollminlab-cluster` (PR #1065) before `Secret Scanning` was added to the contexts
-> list. Worth closing repo by repo.
+> `ansible-playbooks`, `groupme_exporter`, and `homelab-infrastructure` have no workflows at all.
+> `masters-league` does, but `build.yml` triggers on `v*` tags rather than `pull_request` — so no
+> check could ever report on a PR there, and requiring one would block every merge permanently.
+> Give it a PR-triggered workflow first, then add the context.
+>
+> The other four were in this position until #19: CI ran on every PR and a red build still merged,
+> which is the same gap that let a failing secret scan through on `k8s-vollminlab-cluster` (PR
+> #1065) before `Secret Scanning` was added there.
 
 The org's `.github` repository — which holds the public profile README — is intentionally not
 managed here; it has no protected branch.
@@ -142,8 +145,11 @@ Two things that bite:
   and not the workflow's `name:`. A typo doesn't error; the check simply never becomes required,
   and the branch silently loses its gate.
 - **A required check that never reports blocks every merge.** If a workflow only runs on certain
-  paths, or its runners are offline, the PR waits forever. The cluster repo works around runner
-  outages with a `vars.CI_RUNNER` escape hatch.
+  paths, or its runners are offline, the PR waits forever — and with `enforce_admins = true` there
+  is no override. Every repo with a required check therefore pins its runner as
+  `runs-on: ${{ vars.CI_RUNNER || 'vollminlab' }}`, so setting the `CI_RUNNER` repository variable
+  redirects jobs off the self-hosted fleet without editing a workflow. Add that escape hatch
+  *before* you make a check required, not after.
 
 If the repo already has protection applied outside Terraform, import it before planning:
 
