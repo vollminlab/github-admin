@@ -388,3 +388,22 @@ resource "github_branch_protection" "vollmint_main" {
   enforce_admins                  = true
   require_conversation_resolution = true
 }
+
+# ---------------------------------------------------------------------------
+# clipbridge
+#
+# Branch protection is deliberately absent until the repo has CI. Adding it
+# here would block the initial push to an empty main (enforce_admins = true),
+# and a required_status_checks context that does not exist yet would deadlock
+# every subsequent PR. Protection lands in a follow-up PR once the checks are
+# green.
+# ---------------------------------------------------------------------------
+resource "github_repository" "clipbridge" {
+  name                   = "clipbridge"
+  description            = "Paste a Windows screenshot straight into a remote Claude Code session over SSH"
+  visibility             = "public"
+  delete_branch_on_merge = true
+  has_issues             = true
+  has_projects           = true
+  has_wiki               = false
+}
