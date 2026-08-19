@@ -391,12 +391,6 @@ resource "github_branch_protection" "vollmint_main" {
 
 # ---------------------------------------------------------------------------
 # clipbridge
-#
-# Branch protection is deliberately absent until the repo has CI. Adding it
-# here would block the initial push to an empty main (enforce_admins = true),
-# and a required_status_checks context that does not exist yet would deadlock
-# every subsequent PR. Protection lands in a follow-up PR once the checks are
-# green.
 # ---------------------------------------------------------------------------
 resource "github_repository" "clipbridge" {
   name                   = "clipbridge"
@@ -406,4 +400,26 @@ resource "github_repository" "clipbridge" {
   has_issues             = true
   has_projects           = true
   has_wiki               = false
+}
+
+resource "github_branch_protection" "clipbridge_main" {
+  repository_id = github_repository.clipbridge.node_id
+  pattern       = "main"
+
+  required_status_checks {
+    strict = true
+    # Read verbatim from the API, not guessed:
+    #   gh api repos/vollminlab/clipbridge/commits/main/check-runs -q '.check_runs[].name'
+    # A context matching no real check blocks every PR forever, and enforce_admins
+    # leaves no bypass.
+    contexts = ["shell (shellcheck, dash, busybox ash)", "pester (windows)"]
+  }
+
+  required_pull_request_reviews {
+    dismiss_stale_reviews           = true
+    required_approving_review_count = 0
+  }
+
+  enforce_admins                  = true
+  require_conversation_resolution = true
 }
