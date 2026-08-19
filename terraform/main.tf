@@ -412,7 +412,12 @@ resource "github_branch_protection" "clipbridge_main" {
     #   gh api repos/vollminlab/clipbridge/commits/main/check-runs -q '.check_runs[].name'
     # A context matching no real check blocks every PR forever, and enforce_admins
     # leaves no bypass.
-    contexts = ["shell (shellcheck, dash, busybox ash)", "pester (windows)"]
+    contexts = [
+      "shell (shellcheck, dash, busybox ash)",
+      "pester (windows)",
+      "dotnet-core (linux)",
+      "dotnet-win32 (windows, AOT publish)",
+    ]
   }
 
   required_pull_request_reviews {
