@@ -35,6 +35,20 @@ resource "github_branch_protection" "k8s_main" {
     required_approving_review_count = 0
   }
 
+  # Verified 2026-08-20, no drift. k8s PR #1136 showed an available squash-merge
+  # button while "Validate Terraform Modules" was failing, which suggested this
+  # block was not in force. It is: `tofu plan` reported no changes, and a direct
+  # read with the admin token returned all six contexts, enforce_admins true. The
+  # button is an admin UI affordance -- GitHub renders it and then refuses the
+  # merge. Nothing bypassed anything.
+  #
+  # A repository RULESET named "Protect main" (id 3710070, created 2025-02-15,
+  # never updated) also existed on that repo at enforcement: "disabled". It carried
+  # rules this block does not -- required_signatures, required_linear_history,
+  # deletion and non_fast_forward protection -- all inert while disabled. Deleted
+  # 2026-08-20 so protection lives in exactly one place. It was the org's only
+  # ruleset. Restore from the definition in github-admin#24 if any of those rules
+  # are ever wanted; note required_signatures would block unsigned Renovate commits.
   enforce_admins                  = true
   require_conversation_resolution = true
 }
