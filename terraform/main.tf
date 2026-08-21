@@ -254,13 +254,31 @@ resource "github_repository" "masters_league" {
   has_wiki               = false
 }
 
-# No required_status_checks: the only workflow here (build.yml) triggers on
-# `v*` tags, not pull_request, so there is no check that could ever report on a
-# PR. Requiring one would block every merge permanently. Give this repo a
-# PR-triggered CI workflow first, then add its context here.
+# Required checks added 2026-08-21. The note that stood here said to give this repo
+# a PR-triggered CI workflow first and then add its context -- masters-league#15 did
+# exactly that, so the precondition is met and this is the follow-through.
+#
+# Until #15 there was no CI at all: build.yml triggers only on `v*` tags, so nothing
+# ran on a pull request and backend/tests/ (7 tests) had never been executed by
+# anything. Renovate began opening dependency PRs here on 2026-08-21 -- fastapi
+# 0.115 -> 0.141 among them -- which is precisely the change that must not merge
+# without a test run.
+#
+# Both jobs use `runs-on: vars.CI_RUNNER || 'vollminlab'`, so they share the ARC escape
+# hatch. That ordering is deliberate: github-admin#19 established that a required
+# check which cannot run is unmergeable under enforce_admins, and this repo's gate
+# runs on the same fleet it would be blocking.
 resource "github_branch_protection" "masters_league_main" {
   repository_id = github_repository.masters_league.node_id
   pattern       = "main"
+
+  required_status_checks {
+    strict = true
+    contexts = [
+      "Backend Tests",
+      "Docker Build",
+    ]
+  }
 
   required_pull_request_reviews {
     dismiss_stale_reviews           = true
