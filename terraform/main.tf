@@ -320,15 +320,15 @@ resource "github_branch_protection" "ansible_playbooks_main" {
 }
 
 # ---------------------------------------------------------------------------
-# groupme_exporter
+# groupme-exporter
 # ---------------------------------------------------------------------------
 import {
   to = github_repository.groupme_exporter
-  id = "groupme_exporter"
+  id = "groupme-exporter"
 }
 
 resource "github_repository" "groupme_exporter" {
-  name                   = "groupme_exporter"
+  name                   = "groupme-exporter"
   description            = "Pulls all messages from a groupme chat into a sqlite database as a daemon service"
   delete_branch_on_merge = true
   has_issues             = true
