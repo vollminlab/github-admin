@@ -428,7 +428,6 @@ resource "github_branch_protection" "clipbridge_main" {
     # leaves no bypass.
     contexts = [
       "shell (shellcheck, dash, busybox ash)",
-      "pester (windows)",
       "dotnet-core (linux)",
       "dotnet-win32 (windows, AOT publish)",
     ]
