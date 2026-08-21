@@ -15,6 +15,59 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      # Catches a repo that Terraform manages but the org landing page does not
+      # link, and the reverse. Additions and renames look identical from here -
+      # both are "a repo in main.tf that profile/README.md doesn't mention" - so
+      # one check covers both without writing to another repo.
+      #
+      # Lives here rather than in a scheduled workflow in vollminlab/.github on
+      # purpose: GitHub disables scheduled workflows in a public repo after 60
+      # days with no commits, and a landing-page repo goes quiet for 60 days
+      # trivially. It would switch itself off and we would think we were still
+      # watching. This repo gets a PR for every protection change, and renames
+      # have to pass through it, so the check fires exactly when it can matter.
+      #
+      # Warns, never fails: the fix lands in a different repo, so failing would
+      # block this PR behind an unrelated one, and the payoff is a cosmetic 404.
+      - name: Org README link check
+        run: |
+          README_URL="https://raw.githubusercontent.com/vollminlab/.github/main/profile/README.md"
+          readme=$(curl -fsSL "$README_URL") || {
+            echo "::warning::could not fetch the org README - skipping the link check"; exit 0; }
+
+          declared=$(awk '
+            /^resource "github_repository"/ { inblock=1; next }
+            inblock && /^[ \t]*name[ \t]*=/ {
+              match($0, /"[^"]+"/); print substr($0, RSTART+1, RLENGTH-2); inblock=0
+            }
+          ' terraform/main.tf | sort -u)
+
+          linked=$(printf '%s' "$readme" \
+            | grep -oE 'github\.com/vollminlab/[A-Za-z0-9._-]+' | sed 's#.*/##' | sort -u)
+
+          missing=$(comm -23 <(printf '%s\n' "$declared") <(printf '%s\n' "$linked") | grep . || true)
+          extra=$(comm -13 <(printf '%s\n' "$declared") <(printf '%s\n' "$linked") | grep . || true)
+
+          {
+            echo "### Org README link check"
+            echo ""
+            echo "\`$(printf '%s\n' "$declared" | grep -c .)\` repos in Terraform, \`$(printf '%s\n' "$linked" | grep -c .)\` linked in the org README."
+            echo ""
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ -n "$missing" ]; then
+            echo "::warning::Managed by Terraform but not linked in the org README: $(echo $missing)"
+            { echo "- **Not linked in the org README:** $(echo $missing)"; } >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if [ -n "$extra" ]; then
+            echo "::warning::Linked in the org README but not managed by Terraform: $(echo $extra)"
+            { echo "- **Linked but not in Terraform:** $(echo $extra)"; } >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if [ -z "$missing$extra" ]; then
+            echo "org README is in sync"
+            { echo "In sync."; } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
       - uses: 1password/load-secrets-action@v4
         with:
           export-env: true
