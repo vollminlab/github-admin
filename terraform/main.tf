@@ -459,3 +459,83 @@ resource "github_branch_protection" "clipbridge_main" {
   enforce_admins                  = true
   require_conversation_resolution = true
 }
+
+# ---------------------------------------------------------------------------
+# Milestones — k8s-vollminlab-cluster
+#
+# These group the cluster's open issues into the dependency chains that a flat
+# issue list cannot show. They are NOT a status mirror of docs/roadmap.md: that
+# document owns goals, rationale and rejected options, and keeps its own status
+# fields. A 2026-08-22 audit established that milestones would not have caught
+# any of the six stale roadmap statuses -- four of them were prose, and the rest
+# drifted from commits and ansible runs that had no issue at all. Doc currency is
+# enforced by scripts/check-roadmap.sh in the cluster repo instead.
+#
+# Milestones are managed here rather than via `gh` for one reason: this repo is
+# the single answer to "what is the GitHub configuration of this org", and an
+# exception erodes that. The churn is low -- one PR per chain, not per issue.
+#
+# REQUIRES `Issues: write` ON THE APPLY TOKEN. The milestones endpoint is part of
+# the GitHub Issues API, so the fine-grained PAT in 1Password (Github-Admin-Token,
+# loaded by apply.yml) needs that permission explicitly -- a fine-grained PAT does
+# NOT inherit it from the repo admin role. Without it the plan passes (plan only
+# reads) and the apply fails 403 "Resource not accessible by personal access
+# token" on every resource here. That happened on #29 and was reverted by #30.
+# The same applies to any future github_issue_label or issue resources.
+# ---------------------------------------------------------------------------
+
+resource "github_repository_milestone" "k8s_cilium" {
+  owner       = "vollminlab"
+  repository  = github_repository.k8s.name
+  title       = "Cilium migration"
+  description = "Phase 8, split into 8a/8b/8c. 8a is executable; 8b is blocked on UDM router config; 8c is blocked on design work (Gateway API has no forward-auth, and shlink-ingress-controller reconciles only Ingress). Sequence after Kubernetes currency."
+  state       = "open"
+}
+
+resource "github_repository_milestone" "k8s_kubernetes_currency" {
+  owner       = "vollminlab"
+  repository  = github_repository.k8s.name
+  title       = "Kubernetes currency"
+  description = "Keeping the cluster on a supported Kubernetes version. Precedes the Cilium migration: 8a revalidates all 19 NetworkPolicy files, which is worth doing once against the final version."
+  state       = "open"
+}
+
+resource "github_repository_milestone" "k8s_observability" {
+  owner       = "vollminlab"
+  repository  = github_repository.k8s.name
+  title       = "Observability gaps"
+  description = "Signals the cluster does not currently produce at all. Black-box probing is the root of this chain -- SLO work needs an availability SLI, and nothing today measures whether a service actually answers."
+  state       = "open"
+}
+
+resource "github_repository_milestone" "k8s_alerting_delivery" {
+  owner       = "vollminlab"
+  repository  = github_repository.k8s.name
+  title       = "Alerting delivery"
+  description = "Getting a signal out of the cluster once something is wrong. Alertmanager is single-channel (Pushover), and there is no outbound email path at all, so credential-expiry alerting has nowhere reliable to land."
+  state       = "open"
+}
+
+resource "github_repository_milestone" "k8s_backup_dr" {
+  owner       = "vollminlab"
+  repository  = github_repository.k8s.name
+  title       = "Backup and DR"
+  description = "Gaps between what is backed up and what is recoverable. Includes whether git plus Velero is genuinely a complete DR story given the live-patch set that exists outside git."
+  state       = "open"
+}
+
+resource "github_repository_milestone" "k8s_security_hardening" {
+  owner       = "vollminlab"
+  repository  = github_repository.k8s.name
+  title       = "Security hardening"
+  description = "The 2026-05 audit findings. Both were closed once while the documentation still said PARTIAL and were reopened 2026-08-20 -- do not close either without re-measuring."
+  state       = "open"
+}
+
+resource "github_repository_milestone" "k8s_minecraft" {
+  owner       = "vollminlab"
+  repository  = github_repository.k8s.name
+  title       = "Minecraft / DMZ"
+  description = "The only internet-exposed non-HTTP workload. Paper is on an EOL branch, and the port move is blocked on a router change."
+  state       = "open"
+}
