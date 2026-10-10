@@ -463,17 +463,22 @@ resource "github_branch_protection" "clipbridge_main" {
 # ---------------------------------------------------------------------------
 # slate-builder
 #
-# The org's first PRIVATE repo (an internal betting tool). Deliberately not
+# The org's first PRIVATE repo (an internal personal app). Deliberately not
 # linked in the public org README, so plan.yml's README link check skips private
 # repos.
 #
-# Branch protection follows in a separate PR, and only after confirming the
-# org's plan allows it: GitHub Free protects public repos only, and a protection
-# resource on a private repo would fail at apply.
+# INTENTIONALLY UNPROTECTED -- there is no github_branch_protection for this
+# repo, and that is not an oversight. The org is on GitHub Free, which protects
+# public repos only. Checked 2026-10-10:
+#   GET /repos/vollminlab/slate-builder/branches/main/protection
+#   -> 403 "Upgrade to GitHub Pro or make this repository public"
+# A protection resource here would fail at apply. The guard is client-side
+# instead: the repo ships scripts/git-hooks/pre-push, which refuses any push to
+# main. Server-side protection needs GitHub Team, or making the repo public.
 # ---------------------------------------------------------------------------
 resource "github_repository" "slate_builder" {
   name                   = "slate-builder"
-  description            = "Internal NFL odds edge board: DraftKings vs a no-vig consensus, credit-budgeted Odds API ingestion"
+  description            = "Internal personal analytics app"
   visibility             = "private"
   delete_branch_on_merge = true
   has_issues             = true
