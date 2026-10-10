@@ -463,7 +463,7 @@ resource "github_branch_protection" "clipbridge_main" {
 # ---------------------------------------------------------------------------
 # slate-builder
 #
-# The org's first PRIVATE repo (an internal betting tool). Deliberately not
+# The org's first PRIVATE repo (an internal personal app). Deliberately not
 # linked in the public org README, so plan.yml's README link check skips private
 # repos.
 #
@@ -478,7 +478,7 @@ resource "github_branch_protection" "clipbridge_main" {
 # ---------------------------------------------------------------------------
 resource "github_repository" "slate_builder" {
   name                   = "slate-builder"
-  description            = "Internal NFL odds edge board: DraftKings vs a no-vig consensus, credit-budgeted Odds API ingestion"
+  description            = "Internal personal analytics app"
   visibility             = "private"
   delete_branch_on_merge = true
   has_issues             = true
