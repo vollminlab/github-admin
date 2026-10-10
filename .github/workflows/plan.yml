@@ -35,11 +35,12 @@ jobs:
           readme=$(curl -fsSL "$README_URL") || {
             echo "::warning::could not fetch the org README - skipping the link check"; exit 0; }
 
+          # Private repos are excluded: they must never be linked from the public org README.
           declared=$(awk '
-            /^resource "github_repository"/ { inblock=1; next }
-            inblock && /^[ \t]*name[ \t]*=/ {
-              match($0, /"[^"]+"/); print substr($0, RSTART+1, RLENGTH-2); inblock=0
-            }
+            /^resource "github_repository"/ { inblock=1; name=""; vis=""; next }
+            inblock && /^[ \t]*name[ \t]*=/ { match($0, /"[^"]+"/); name=substr($0, RSTART+1, RLENGTH-2) }
+            inblock && /^[ \t]*visibility[ \t]*=/ { match($0, /"[^"]+"/); vis=substr($0, RSTART+1, RLENGTH-2) }
+            inblock && /^}/ { if (name != "" && vis != "private") print name; inblock=0 }
           ' terraform/main.tf | sort -u)
 
           linked=$(printf '%s' "$readme" \

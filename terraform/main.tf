@@ -461,6 +461,27 @@ resource "github_branch_protection" "clipbridge_main" {
 }
 
 # ---------------------------------------------------------------------------
+# slate-builder
+#
+# The org's first PRIVATE repo (an internal betting tool). Deliberately not
+# linked in the public org README, so plan.yml's README link check skips private
+# repos.
+#
+# Branch protection follows in a separate PR, and only after confirming the
+# org's plan allows it: GitHub Free protects public repos only, and a protection
+# resource on a private repo would fail at apply.
+# ---------------------------------------------------------------------------
+resource "github_repository" "slate_builder" {
+  name                   = "slate-builder"
+  description            = "Internal NFL odds edge board: DraftKings vs a no-vig consensus, credit-budgeted Odds API ingestion"
+  visibility             = "private"
+  delete_branch_on_merge = true
+  has_issues             = true
+  has_projects           = true
+  has_wiki               = false
+}
+
+# ---------------------------------------------------------------------------
 # Milestones — k8s-vollminlab-cluster
 #
 # These group the cluster's open issues into the dependency chains that a flat
