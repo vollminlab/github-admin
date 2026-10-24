@@ -509,6 +509,41 @@ resource "github_repository" "triage_reports" {
 }
 
 # ---------------------------------------------------------------------------
+# claude-env, dotfiles
+#
+# Private developer-environment repos: claude-env masters ~/.claude (settings,
+# hooks, skills, plugins), dotfiles masters the shell, herdr and the terminal
+# profile. Private because settings and hooks map the homelab in detail.
+#
+# auto_init = false: both are seeded by pushing an existing local history, which
+# an initial README commit would conflict with.
+#
+# Unprotected for the same reason as slate-builder: GitHub Free cannot protect
+# a private repo.
+# ---------------------------------------------------------------------------
+resource "github_repository" "claude_env" {
+  name                   = "claude-env"
+  description            = "Developer environment configuration"
+  visibility             = "private"
+  auto_init              = false
+  delete_branch_on_merge = true
+  has_issues             = true
+  has_projects           = false
+  has_wiki               = false
+}
+
+resource "github_repository" "dotfiles" {
+  name                   = "dotfiles"
+  description            = "Shell and terminal configuration"
+  visibility             = "private"
+  auto_init              = false
+  delete_branch_on_merge = true
+  has_issues             = true
+  has_projects           = false
+  has_wiki               = false
+}
+
+# ---------------------------------------------------------------------------
 # Milestones — k8s-vollminlab-cluster
 #
 # These group the cluster's open issues into the dependency chains that a flat
